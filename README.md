@@ -21,7 +21,7 @@ var pdf2img = require('pdf2img');
 
 var input   = __dirname + '/test.pdf';
 
-pdf2img.setOptions({
+pdf2img.setGlobalBaseOptions({
   type: 'png',                                // png or jpg, default jpg
   size: 1024,                                 // default 1024
   density: 600,                               // default 600
@@ -31,6 +31,12 @@ pdf2img.setOptions({
 });
 
 pdf2img.convert(input, function(err, info) {
+  if (err) console.log(err)
+  else console.log(info);
+});
+
+// To provide options specific to a single conversion:
+pdf2img.convert(input, {page: 1}, function(err, info) {
   if (err) console.log(err)
   else console.log(info);
 });
