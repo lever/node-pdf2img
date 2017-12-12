@@ -9,7 +9,7 @@ var pdf2img = require('../index.js');
 var input   = __dirname + path.sep + 'test.pdf';
 var onePageInput = __dirname + path.sep + 'one_page.pdf';
 
-pdf2img.setOptions({
+pdf2img.setGlobalBaseOptions({
   outputdir: __dirname + path.sep + '/output',
   outputname: 'test'
 });
@@ -35,8 +35,8 @@ describe('Split and convert pdf into images', function() {
   });
   it ('Create png files', function(done) {
     this.timeout(100000);
-    pdf2img.setOptions({ type: 'png' });
-    pdf2img.convert(input, function(err, info) {
+    var opts = { type: 'png' };
+    pdf2img.convert(input, opts, function(err, info) {
       if (info.result !== 'success') {
         info.result.should.equal('success');
         done();
@@ -54,24 +54,23 @@ describe('Split and convert pdf into images', function() {
   });
   it ('Create jpg file only for given page', function(done) {
     this.timeout(100000);
-    pdf2img.setOptions({ type: 'jpg', page: 1 });
-    convertFileAndAssertExists(input, 1, 'jpg', done);
+    var opts = { type: 'jpg', page: 1 };
+    convertFileAndAssertExists(input, opts, 1, 'jpg', done);
   });
   it ('Create png file only for given page', function(done) {
     this.timeout(100000);
-    pdf2img.setOptions({ type: 'png', page: 2 });
-    convertFileAndAssertExists(input, 2, 'png', done);
+    var opts = { type: 'png', page: 2 };
+    convertFileAndAssertExists(input, opts, 2, 'png', done);
   });
   it ('Create jpg file for one page pdf', function(done) {
     this.timeout(100000);
-    // pdf2img options do not reset between tests.
-    pdf2img.setOptions({ type: 'jpg', page: null});
-    convertFileAndAssertExists(onePageInput, 1, 'jpg', done);
+    var opts = { type: 'jpg', page: null};
+    convertFileAndAssertExists(onePageInput, opts, 1, 'jpg', done);
   });
   it ('Create jpg file for one page pdf when specifying', function(done) {
     this.timeout(100000);
-    pdf2img.setOptions({ type: 'jpg', page: 1 });
-    convertFileAndAssertExists(onePageInput, 1, 'jpg', done);
+    var opts = { type: 'jpg', page: 1 };
+    convertFileAndAssertExists(onePageInput, opts, 1, 'jpg', done);
   });
 });
 
