@@ -72,6 +72,19 @@ describe('Split and convert pdf into images', function() {
     var opts = { type: 'jpg', page: 1 };
     convertFileAndAssertExists(onePageInput, opts, 1, 'jpg', done);
   });
+  it ('The timeout parameter will end conversion', function(done) {
+    this.timeout(100000);
+    // First induce a timeout error.
+    pdf2img.convert(onePageInput, {timeoutMilliseconds: 10}, function(err) {
+      if (err) {
+        err.result.should.equal('timeout');
+      } else {
+        return done('Conversion should not have succeeded.')
+      }
+      // Then convert again to confirm there were no side effects.
+      convertFileAndAssertExists(onePageInput, {}, 1, 'jpg', done);
+    });
+  });
 });
 
 var convertFileAndAssertExists = function (path, pageNumber, extension, callback) {
