@@ -87,8 +87,8 @@ describe('Split and convert pdf into images', function() {
   });
 });
 
-var convertFileAndAssertExists = function (path, pageNumber, extension, callback) {
-  pdf2img.convert(path, function(err, info) {
+var convertFileAndAssertExists = function (path, options, pageNumber, extension, callback) {
+  pdf2img.convert(path, options, function(err, info) {
     if (err) {
       console.log("Error: ", err);
       throw err;
