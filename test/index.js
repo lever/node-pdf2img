@@ -15,6 +15,18 @@ pdf2img.setGlobalBaseOptions({
 });
 
 describe('Split and convert pdf into images', function() {
+  it ('Handle bad input', function(done) {
+    this.timeout(100000);
+    var opts = { type: 'jpg', page: null};
+    var error = {result: 'error', message: 'Unsupported file type.'};
+    convertFileAndAssertError('asdf', opts, error, done);
+  });
+  it ('Handle file does not exist', function(done) {
+    this.timeout(100000);
+    var opts = { type: 'jpg', page: null};
+    var error = {result: 'error', message: 'Input file not found.'};
+    convertFileAndAssertError('asdf.pdf', opts, error, done);
+  });
   it ('Create jpg files', function(done) {
     this.timeout(100000);
     pdf2img.convert(input, function(err, info) {
