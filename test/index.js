@@ -15,6 +15,18 @@ pdf2img.setGlobalBaseOptions({
 });
 
 describe('Split and convert pdf into images', function() {
+  it ('Handle bad input', function(done) {
+    this.timeout(100000);
+    var opts = { type: 'jpg', page: null};
+    var error = {result: 'error', message: 'Unsupported file type.'};
+    convertFileAndAssertError('asdf', opts, error, done);
+  });
+  it ('Handle file does not exist', function(done) {
+    this.timeout(100000);
+    var opts = { type: 'jpg', page: null};
+    var error = {result: 'error', message: 'Input file not found.'};
+    convertFileAndAssertError('asdf.pdf', opts, error, done);
+  });
   it ('Create jpg files', function(done) {
     this.timeout(100000);
     pdf2img.convert(input, function(err, info) {
@@ -72,10 +84,36 @@ describe('Split and convert pdf into images', function() {
     var opts = { type: 'jpg', page: 1 };
     convertFileAndAssertExists(onePageInput, opts, 1, 'jpg', done);
   });
+  it ('The timeout parameter will end conversion', function(done) {
+    this.timeout(100000);
+    var milliseconds = 10;
+    var opts = {timeoutMilliseconds: milliseconds};
+    var error = {
+      result: 'timeout',
+      message: 'gm identify call took longer than ' + milliseconds + 'ms.'
+    };
+    // First induce a timeout error.
+    convertFileAndAssertError(onePageInput, opts, error, function(err) {
+      // Then convert again to confirm there were no side effects.
+      convertFileAndAssertExists(onePageInput, {}, 1, 'jpg', done);
+    });
+  });
 });
 
-var convertFileAndAssertExists = function (path, pageNumber, extension, callback) {
-  pdf2img.convert(path, function(err, info) {
+var convertFileAndAssertError = function (path, options, error, callback) {
+  pdf2img.convert(path, options, function(err) {
+    if (err) {
+      err.result.should.equal(error.result);
+      err.message.should.equal(error.message);
+    } else {
+      return callback('Conversion should not have succeeded.')
+    }
+    callback();
+  });
+};
+
+var convertFileAndAssertExists = function (path, options, pageNumber, extension, callback) {
+  pdf2img.convert(path, options, function(err, info) {
     if (err) {
       console.log("Error: ", err);
       throw err;
